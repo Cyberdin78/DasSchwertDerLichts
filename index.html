@@ -3,15 +3,198 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Das Schwert Der Lichts - V0.1 Setup</title>
+    <title>Das Schwert des Lichts - Einführungsprototyp</title>
+    <style>
+        body { font-family: sans-serif; background-color: #f4f4f4; padding: 20px; }
+        #game-container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        .dialogue { background-color: #e0f7fa; border-left: 5px solid #00bcd4; padding: 15px; margin-bottom: 20px; border-radius: 4px; }
+        .buttons-container button { margin: 5px; padding: 10px 15px; cursor: pointer; background-color: #4CAF50; color: white; border: none; border-radius: 4px; }
+        .buttons-container button:hover { opacity: 0.9; }
+        /* Versteckt alle Buttons und Dialoge initial, bis sie durch JS freigeschaltet werden */
+        .hidden { display: none; }
+    </style>
 </head>
 <body>
-    <h1>Willkommen im Dungeon, Held!</h1>
-    <p>Dies ist der Startbildschirm unseres Dungeon-Crawlers.</p>
-    <p>Wir richten jetzt die Umgebung ein, damit wir mit dem Code starten können.</p>
 
-    <script>
-        console.log("Das Spiel startet!");
-    </script>
+<div id="game-container">
+    <h1>Das Schwert des Lichts - Dorfentwicklung</h1>
+    
+    <div id="dialogue-box" class="dialogue">
+        <p>Willkommen, mutiger Abenteurer! Das Dorf braucht Deine Führung. Unsere erste Aufgabe: Das Hauptgebäude, das Gasthaus, ausbauen.</p>
+        <p>Klicke auf den Button, um fortzufahren und zu erfahren, wie Du das benötigte Material bekommst.</p>
+    </div>
+
+    <div id="buttons-container" class="buttons-container">
+        <button id="next-step-button" onclick="handleNextStep(1)">Weiter (Schritt 1)</button>
+
+        <button id="gasthaus-button" class="hidden">Gasthaus (Stufe 1)</button>
+        <button id="holzfaeller-button" class="hidden">Holzfällerhütte/Sägewerk (Bauen)</button>
+        <button id="steinbruch-button" class="hidden">Steinbruch (Bauen)</button>
+        <button id="bauernhof-button" class="hidden">Bauernhof (Bauen)</button>
+        <button id="wohnhaus-button" class="hidden">Wohnhaus (Bauen)</button>
+        <button id="markt-button" class="hidden">Markt (Bauen)</button>
+        <button id="schmied-button" class="hidden">Schmied (Bauen)</button>
+        <button id="turm-button" class="hidden">Dungeon: Erster Turm</button>
+    </div>
+</div>
+
+<script>
+    /* ================================================================================
+    GEMINI-PROTOKOLL: GESPEICHERTE SPIELLOGIK ZUR ERINNERUNG
+    
+    Dieses JS-Objekt dient als Spiegelbild der in Gemini gespeicherten
+    Einführungslogik und des Gebäude-Status.
+    
+    Ablauf: 
+    1. Gasthaus-Erklärung (Upgrades brauchen Material)
+    2. Holzfäller bauen (Liefert Holz)
+    3. Steinbruch bauen (Liefert Steine)
+    4. Erklärung Arbeiter (Brauchen Nahrung/Wohnen)
+    5. Bauernhof bauen (Liefert Nahrung, bestimmt Arbeiterzahl)
+    6. Wohnhaus bauen (Bestimmt max. Arbeiterkapazität)
+    7. Produktion Start-Dialog
+    8. Markt bauen (Verkauf für Gold, um Arbeiter zu bezahlen)
+    9. 1. Turm freischalten (Eisen/Goldquelle)
+    10. Schmied bauen (Schließt Materialkreislauf: Nägel)
+
+    Alle Level 1 Gebäude sind zu Beginn KOSTENFREI!
+    ================================================================================
+    */
+
+    let gameState = {
+        currentStep: 1, // Start bei Schritt 1
+        buildings: {
+            gasthaus: { built: true, level: 1 }, // Gasthaus ist das Hauptgebäude
+            holzfaeller: { built: false, buttonId: 'holzfaeller-button' },
+            steinbruch: { built: false, buttonId: 'steinbruch-button' },
+            bauernhof: { built: false, buttonId: 'bauernhof-button' },
+            wohnhaus: { built: false, buttonId: 'wohnhaus-button' },
+            markt: { built: false, buttonId: 'markt-button' },
+            schmied: { built: false, buttonId: 'schmied-button' },
+            turm: { unlocked: false, buttonId: 'turm-button' }
+        }
+    };
+
+    const dialogueBox = document.getElementById('dialogue-box');
+    const nextButton = document.getElementById('next-step-button');
+
+    // Funktion zur Aktualisierung des Dialogs und der Buttons
+    function updateUI(message, nextButtonText = 'Weiter') {
+        dialogueBox.innerHTML = '<p>' + message + '</p>';
+        nextButton.textContent = nextButtonText;
+        nextButton.onclick = () => handleNextStep(gameState.currentStep + 1);
+    }
+
+    // Funktion zum Anzeigen von Buttons, die jetzt gebaut werden können
+    function showBuildingButton(buildingKey) {
+        const buttonId = gameState.buildings[buildingKey].buttonId;
+        const button = document.getElementById(buttonId);
+        button.classList.remove('hidden');
+        button.onclick = () => {
+            // Logik: Gebäude wird gebaut (Level 1 ist kostenlos)
+            gameState.buildings[buildingKey].built = true;
+            button.textContent = button.textContent.replace(' (Bauen)', ' (Gebaut)');
+            button.disabled = true;
+            // Nach dem Bau, zur nächsten Erklärung/zum nächsten Schritt gehen
+            handleNextStep(gameState.currentStep + 1); 
+        };
+    }
+
+    // Funktion zur Freischaltung des Turm-Buttons
+    function unlockTurmButton() {
+        gameState.buildings.turm.unlocked = true;
+        const button = document.getElementById(gameState.buildings.turm.buttonId);
+        button.classList.remove('hidden');
+        button.textContent = 'Erster Turm (Abenteuer!)';
+        button.onclick = () => dialogueBox.innerHTML = '<p>Du betrittst den ersten Turm... hier gibt es Gold und alte Eisenteile!</p>'; 
+        nextButton.classList.add('hidden'); // Der Spieler soll jetzt in den Turm gehen.
+    }
+    
+    // Hauptfunktion, die den Einführungs-Ablauf steuert
+    function handleNextStep(step) {
+        gameState.currentStep = step;
+        nextButton.classList.remove('hidden');
+        
+        // --- 1. Gasthaus-Erklärung (braucht Material) ---
+        if (step === 1) {
+             updateUI('Willkommen, mutiger Abenteurer! Das Dorf braucht Deine Führung. Unser Hauptgebäude, das **Gasthaus**, muss ausgebaut werden, um alle anderen Gebäude zu stärken. Dafür benötigen wir **Materialien**.');
+        } 
+        
+        // --- 2. Holzfäller bauen (kostenlos) ---
+        else if (step === 2) {
+            updateUI('Das wichtigste Baumaterial ist Holz. Baue die **Holzfällerhütte/Sägewerk** (Level 1, kostenlos), um **Holzstämme und Bretter** zu produzieren.');
+            nextButton.classList.add('hidden'); // Verstecke "Weiter", bis Gebäude gebaut ist
+            showBuildingButton('holzfaeller');
+        } 
+        
+        // --- 3. Steinbruch bauen (kostenlos) ---
+        else if (step === 3) {
+            updateUI('Neben Holz brauchen wir auch Steine und Lehm. Baue den **Steinbruch** (Level 1, kostenlos), um diese Materialien zu liefern.');
+            showBuildingButton('steinbruch');
+        } 
+        
+        // --- 4. Erklärung Arbeiter (braucht Nahrung/Wohnen) ---
+        else if (step === 4) {
+             updateUI('Die Produktion in Holzfäller und Steinbruch ist gestartet, aber sie ist langsam. Wir brauchen **Arbeiter**! Arbeiter brauchen Nahrung und einen Platz zum Wohnen.');
+        } 
+        
+        // --- 5. Bauernhof bauen (kostenlos, bestimmt Arbeiteranzahl) ---
+        else if (step === 5) {
+            updateUI('Um die Arbeiter zu versorgen, müssen wir Nahrung produzieren. Baue den **Bauernhof** (Level 1, kostenlos). Der Level des Bauernhofs bestimmt die **tatsächliche Anzahl der Arbeiter** im Dorf.');
+            showBuildingButton('bauernhof');
+        } 
+        
+        // --- 6. Wohnhaus bauen (kostenlos, bestimmt max. Arbeiter) ---
+        else if (step === 6) {
+            updateUI('Die Arbeiter benötigen auch Wohnraum. Baue das **Wohnhaus** (Level 1, kostenlos). Das Wohnhaus bestimmt die **maximale Kapazität** an möglichen Arbeitern.');
+            showBuildingButton('wohnhaus');
+        }
+        
+        // --- 7. Produktion Start-Dialog ---
+        else if (step === 7) {
+            updateUI('Alle Produktionsgebäude sind nun vorhanden! Die Arbeiter beginnen automatisch, Holz, Steine und Nahrung zu produzieren. Die Geschwindigkeit hängt von der Anzahl der Arbeiter und dem jeweiligen Gebäudelvel ab.');
+        }
+        
+        // --- 8. Markt bauen (kostenlos, Verkauf für Gold zur Arbeiterbezahlung) ---
+        else if (step === 8) {
+            updateUI('Achtung! **Arbeiter kosten Gold**! Um sie zu bezahlen, musst Du Deine produzierten Waren (Holz, Steine, Weizen etc.) verkaufen. Baue den **Markt** (Level 1, kostenlos), Deine Hauptquelle für Gold.');
+            showBuildingButton('markt');
+        }
+        
+        // --- 9. 1. Turm freischalten (Eisenquelle) ---
+        else if (step === 9) {
+            updateUI('Der Goldkreislauf steht. Nun fehlt das letzte Baumaterial: **Eisennägel**. Diese fertigt der Schmied, wofür er **alte Eisenteile** benötigt, die nur in den Dungeons zu finden sind. Der **Erste Turm** ist freigeschaltet!');
+            unlockTurmButton(); // Zeigt den Turm-Button an und versteckt "Weiter"
+            nextButton.classList.add('hidden'); 
+            
+            // Da der Spieler nun in den Dungeon muss, legen wir den nächsten Schritt auf 10 (Schmied)
+            // und verwenden den Turm-Button als Trigger. Für den Prototyp zeigen wir den Button direkt an.
+        }
+        
+        // --- 10. Schmied bauen (kostenlos, Nägel herstellen) ---
+        else if (step === 10) {
+            // Annahme: Der Spieler hat den Turm besucht oder den Dialog ausgelöst
+            updateUI('Aus dem ersten Turm hast Du **alte Eisenteile** mitgebracht! Baue den **Schmied** (Level 1, kostenlos), um diese in die benötigten **Eisennägel** für den Ausbau des Gasthauses umzuwandeln. Jetzt ist der Materialkreislauf geschlossen!');
+            showBuildingButton('schmied');
+        }
+
+        // --- 11. Abschluss der Einführung ---
+        else if (step === 11) {
+            nextButton.classList.add('hidden'); 
+            document.getElementById('schmied-button').textContent = "Schmied (Gebaut, Level 1)";
+            updateUI('Herzlichen Glückwunsch! Das Dorf steht. Du hast nun Zugang zu allen grundlegenden Materialien: **Steine, Holzbretter, Eisennägel**. Du kannst nun das **Gasthaus ausbauen**! Das eigentliche Spiel beginnt jetzt.', 'Spiel starten!');
+            document.getElementById('gasthaus-button').classList.remove('hidden');
+            document.getElementById('gasthaus-button').onclick = () => dialogueBox.innerHTML = '<p>Der Ausbau des Gasthauses auf Level 2 kostet: XX Holzbretter, YY Steine, ZZ Eisennägel.</p>';
+        }
+
+        // Wenn der Schmied gebaut wurde (Schritt 10), gehen wir zum Abschluss (Schritt 11)
+        if (step === 10 && gameState.buildings.schmied.built) {
+             handleNextStep(11);
+        }
+    }
+
+    // Startet das Spiel mit dem ersten Schritt bei Seitenaufruf
+    window.onload = () => handleNextStep(1); 
+</script>
 </body>
 </html>
