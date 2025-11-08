@@ -1,59 +1,59 @@
-// game.js
-
-// 1. Initialisierung der Spielvariablen und des Tutorial-Status
-let gameState = {
-    tutorialStep: 0,
-    isTutorialActive: true,
-    gold: 0,
-    materials: { // Aktuell im Lager/Gasthaus-Lager
-        woodLog: 0,
-        board: 0,
-        clay: 0,
-        stone: 0,
-        wheat: 0,
-        potato: 0,
-        meat: 0,
-        egg: 0,
-        ironNail: 0 // Vom Schmied
-    },
-    buildings: {
-        inn: { level: 0, workers: 0, unlocked: true }, // Startet als sichtbar
-        lumberjack: { level: 0, workers: 0, unlocked: false },
-        quarry: { level: 0, workers: 0, unlocked: false },
-        farm: { level: 0, workers: 0, unlocked: false },
-        residential: { level: 0, workers: 0, unlocked: false },
-        market: { level: 0, workers: 0, unlocked: false },
-        firstTower: { level: 0, workers: 0, unlocked: false },
-        blacksmith: { level: 0, workers: 0, unlocked: false }
-    }
-};
-
-// 2. Funktion zur Anzeige von Tutorial-Nachrichten
-function showTutorialMessage(message) {
-    // Hier fügen wir später eine UI-Funktion ein, um die Nachricht schön anzuzeigen
-    console.log("TUTORIAL: " + message);
-}
-
-// 3. Hauptfunktion zur Steuerung des Tutorials
-function startTutorial() {
-    // Schritt 1: Begrüßung
-    showTutorialMessage("Willkommen, tapferer Abenteurer! Die Welt braucht das Schwert des Lichts. Doch zuerst müssen wir dieses Dorf wieder aufbauen.");
-    
-    // Nächster Schritt: Bau des Gasthauses
-    setTimeout(() => {
-        gameState.tutorialStep = 1;
-        showTutorialMessage("Dein erstes und wichtigstes Gebäude ist das **Gasthaus**. Es ist das Hauptgebäude, das das maximale Level aller anderen Gebäude bestimmt. Bau es jetzt! (Klicke auf den Platzhalter für das Gasthaus)");
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Das Schwert des Lichts</title>
+    </head>
+<body>
+    <div id="game-container">
         
-        // **TODO:** Das Gasthaus-Element im DOM muss klickbar gemacht werden,
-        // um das Tutorial voranzubringen.
-    }, 3000); // 3 Sekunden warten, damit der Spieler die Begrüßung liest
-}
+        <div id="tutorial-box">
+            <p id="tutorial-message">Lade Spiel...</p>
+        </div>
 
-// 4. Starten des Tutorials, sobald das DOM geladen ist
-document.addEventListener('DOMContentLoaded', (event) => {
-    // Wir stellen sicher, dass das Gasthaus auf Level 1 gebaut wird (kostenlos)
-    // Das machen wir nach der Willkommensnachricht.
-    
-    // Wir rufen die Startfunktion auf, sobald alles bereit ist:
-    startTutorial(); 
-});
+        <div id="village-center">
+            
+            <div id="well" class="village-asset">
+                <p>Brunnen</p>
+            </div>
+            
+            <div id="inn" class="building">
+                <h3>Gasthaus (Lvl 0)</h3>
+                <p>(Klicken zum Bauen)</p>
+            </div>
+            
+            <div id="lumberjack" class="building hidden">
+                <h3>Holzfällerhütte</h3>
+            </div>
+            
+            <div id="quarry" class="building hidden">
+                <h3>Steinbruch</h3>
+            </div>
+            
+            <div id="farm" class="building hidden">
+                <h3>Bauernhof</h3>
+            </div>
+            
+            <div id="residential" class="building hidden">
+                <h3>Wohnhaus</h3>
+            </div>
+            
+            <div id="market" class="building hidden">
+                <h3>Händler</h3>
+            </div>
+            
+            <div id="blacksmith" class="building hidden">
+                <h3>Schmied</h3>
+            </div>
+            
+            <div id="first-tower" class="building hidden">
+                <h3>Erster Turm</h3>
+            </div>
+
+        </div>
+
+    </div>
+
+    </body>
+</html>
