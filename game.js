@@ -1,94 +1,86 @@
-// --- Spiel-Status und Konstanten ---
+// --- Spiel-Status und Konstanten (Bleiben unverändert) ---
 let currentTutorialStep = 0;
 const gameData = {
-    // Hier könnten später Spiel-Variablen wie Gold, Materialien, etc. gespeichert werden
-    gold: 0,
-    boards: 0,
-    stones: 0,
-    workers: 0,
-    innLevel: 0
+    // ...
 };
 
 // Die Sequenz der Tutorial-Schritte und Aktionen
 const tutorialSteps = [
-    // Schritt 0: Begrüßung
+    // Schritt 0: Begrüßung (Flehender Dorfbewohner)
     {
-        message: "Sei gegrüßt, Abenteurer! Willkommen in deinem neuen Dorf. Lass uns mit dem Wiederaufbau beginnen.",
+        message: "Oh, edler Fremder! Seid Ihr die erhoffte Rettung? Das Böse nagt an unserer Welt. Doch bevor Ihr das Schwert des Lichts suchen könnt, müssen wir unser Dorf wieder aufbauen. Bitte, helft uns!",
         action: null
     },
-    // Schritt 1: Gasthaus bauen/upgraden (Hauptgebäude)
+    // Schritt 1: Gasthaus errichten (Das Zentrum der Macht)
     {
-        message: "Das wichtigste Gebäude ist das Gasthaus. Es bestimmt die maximale Stufe aller anderen Gebäude. Lass uns Level 1 bauen.",
+        message: "Die erste und wichtigste Stätte ist unser **Gasthaus**. Es ist das Herz des Dorfes und bestimmt, wie stark wir alle werden können. Bitte, **errichtet es jetzt**!",
         action: () => {
-            // Hier könnte die Logik für Bau/Upgrade des Gasthauses starten
-            // Aktuell nur eine visuelle Änderung und Nachricht
             const inn = document.getElementById('inn');
-            inn.innerHTML = '<h3>Gasthaus (Lvl 1)</h3><p>Upgrade-Optionen: Heilung, Lager, Nebenquests</p>';
+            inn.innerHTML = '<h3>Gasthaus (Lvl 1)</h3><p>Hier könnt Ihr Euch heilen, Gegenstände lagern und Aufträge finden.</p>';
             gameData.innLevel = 1;
         }
     },
-    // Schritt 2: Holzfällerhütte freischalten und erklären
+    // Schritt 2: Holzfällerhütte errichten (Bretter für Upgrades)
     {
-        message: "Wir brauchen Holz. Nun ist es Zeit für die Holzfällerhütte! Sie dient gleichzeitig als Sägewerk und produziert **Logs und Boards**.",
+        message: "Edler Herr, für jedes Upgrade unserer Gebäude brauchen wir Holz. Errichtet die **Holzfällerhütte**. Sie ist gleichzeitig ein Sägewerk und produziert **Holzstämme und wertvolle Bretter**.",
         action: () => {
             const lumberjack = document.getElementById('lumberjack');
             lumberjack.classList.remove('hidden');
         }
     },
-    // Schritt 3: Steinbruch freischalten und erklären
+    // Schritt 3: Steinbruch errichten (Steine für Fundamente)
     {
-        message: "Für Upgrades benötigen wir auch Steine und Lehm. Baue einen Steinbruch. Er produziert **Clay und Stones**.",
+        message: "Neben Holz benötigen wir robuste Steine und Lehm für die Fundamente. Errichtet einen **Steinbruch**, der uns mit **Lehm und Steinen** versorgt.",
         action: () => {
             const quarry = document.getElementById('quarry');
             quarry.classList.remove('hidden');
         }
     },
-    // Schritt 4: Erklärung zu Arbeitern
+    // Schritt 4: Erklärung zu Arbeitern (Produktionsgrundlage)
     {
-        message: "Achtung: Die Produktionsgeschwindigkeit deiner Gebäude hängt von der Anzahl der **Arbeiter** im Dorf ab. Es ist keine manuelle Zuweisung nötig, aber die maximale Arbeiteranzahl wird vom Wohnhaus bestimmt.",
+        message: "Ihr fragt nach Produktion? Sie hängt von unseren fleißigen **Arbeitern** ab! Wir brauchen ihnen nur eine Stätte zu geben, und sie beginnen automatisch zu arbeiten.",
         action: null
     },
-    // Schritt 5: Bauernhof freischalten und erklären
+    // Schritt 5: Bauernhof errichten (Warenproduktion)
     {
-        message: "Um deine Arbeiter zu ernähren und weitere Waren zu bekommen, baue einen Bauernhof. Er produziert **Wheat, Potatoes, Meat und Eggs**.",
+        message: "Essen ist Leben! Wir müssen Waren für den Handel haben. Errichtet den **Bauernhof**. Er liefert uns alles: **Weizen, Kartoffeln, Fleisch und Eier**.",
         action: () => {
             const farm = document.getElementById('farm');
             farm.classList.remove('hidden');
         }
     },
-    // Schritt 6: Wohnhaus freischalten und erklären
+    // Schritt 6: Wohnhaus errichten (Arbeitskraft-Limit)
     {
-        message: "Um mehr Arbeiter aufzunehmen, benötigst du das Wohnhaus. Sein Level bestimmt die **maximale Kapazität** an Arbeitskräften.",
+        message: "Die Produktionsgeschwindigkeit wird von der Anzahl der Arbeiter bestimmt, die wir aufnehmen können. Das **Wohnhaus** legt unsere **maximale Arbeitskraftkapazität** fest. Es muss errichtet werden!",
         action: () => {
             const residential = document.getElementById('residential');
             residential.classList.remove('hidden');
         }
     },
-    // Schritt 7: Produktionsstart und Lager-Regel
+    // Schritt 7: Produktionsbeginn und Lagerung (Die Regel)
     {
-        message: "Die Produktion beginnt automatisch! Wichtig: Alle Produkte verbleiben im jeweiligen Produktionsgebäude (max. 100 pro Level), nicht im Dorflager.",
+        message: "Die Produktion hat begonnen! Denkt daran: Die Waren verbleiben **direkt im Produktionsgebäude** (begrenzt auf 100 pro Level). Dort liegen sie sicher.",
         action: null
     },
-    // Schritt 8: Händler/Markt freischalten und erklären (Einnahmequelle)
+    // Schritt 8: Händler errichten (Der Goldkreislauf)
     {
-        message: "Arbeiter kosten Gold. Um Gold zu verdienen und deine Arbeiter zu bezahlen, besuche den Händler und verkaufe deine Waren. Das ist deine Haupteinnahmequelle.",
+        message: "Hört genau zu: Die **Entnahme von Waren** aus den Produktionslagern **kostet Euch Gold**! Um Gold zu verdienen, **errichtet den Händler**. Nur dort könnt Ihr Eure Güter verkaufen und Eure Geldsorgen lindern.",
         action: () => {
             const market = document.getElementById('market');
             market.classList.remove('hidden');
         }
     },
-    // Schritt 9: Erster Turm und Eisenbeschaffung
+    // Schritt 9: Der Ruf des Abenteuers (Erster Turm)
     {
-        message: "Gut gemacht! Jetzt beginnt die Hauptquest: den ersten Turm erkunden. Hierfür brauchst du Gold, Ausrüstung und einen Eisenlieferanten. Die Zeit ist reif für den Schmied.",
+        message: "Ihr seid bereit für die Quest! Der erste Turm ruft. Dafür braucht Ihr Ausrüstung und natürlich Eisen. Das Eisen wird ein tapferer Lieferant bringen, aber Ihr müsst es verarbeiten!",
         action: () => {
             const firstTower = document.getElementById('first-tower');
             firstTower.classList.remove('hidden');
-            // Hinweis: Der Schmied wurde in Schritt 10 implementiert, da es der nächste logische Schritt ist
         }
     },
-    // Schritt 10: Schmied freischalten (für Eisennägel/Ausrüstung)
+    // Schritt 10: Schmied errichten (Veredelung und Nägel)
     {
-        message: "Der Schmied kann das Eisen deines Lieferanten zu nützlichen Eisennägeln und Ausrüstung verarbeiten. Damit ist das Tutorial abgeschlossen!",
+        message: "Errichtet nun den **Schmied**. Er ist der einzige, der das rohe Eisen in wichtige **Eisennägel** für Upgrades und in Eure Ausrüstung verwandeln kann! Mögen die Götter Euch beistehen.",
         action: () => {
             const blacksmith = document.getElementById('blacksmith');
             blacksmith.classList.remove('hidden');
@@ -96,46 +88,9 @@ const tutorialSteps = [
     },
     // Schritt 11: Abschluss
     {
-        message: "Tutorial abgeschlossen. Klicke, um mit dem Spiel zu beginnen.",
+        message: "Das Tutorial ist abgeschlossen, edler Fremder! Die Hoffnung des Dorfes ruht nun in Euren Händen. Klickt, um Eure Reise zu beginnen.",
         action: null
     }
 ];
 
-// Funktion zur Steuerung der Tutorial-Schritte
-function nextTutorialStep() {
-    // Prüfen, ob noch Schritte übrig sind
-    if (currentTutorialStep < tutorialSteps.length) {
-        const step = tutorialSteps[currentTutorialStep];
-        const tutorialBox = document.getElementById('tutorial-box');
-        const tutorialMessage = document.getElementById('tutorial-message');
-
-        // 1. Die Nachricht anzeigen
-        tutorialMessage.textContent = step.message;
-
-        // 2. Die Aktion ausführen, falls vorhanden
-        if (step.action) {
-            step.action();
-        }
-
-        // 3. Zum nächsten Schritt übergehen
-        currentTutorialStep++;
-    } else {
-        // Tutorial ist fertig, Container für den Spielfluss vorbereiten
-        const tutorialBox = document.getElementById('tutorial-box');
-        tutorialBox.style.cursor = 'default';
-        tutorialBox.onclick = null;
-        document.getElementById('tutorial-message').textContent = "Das Spiel kann nun beginnen!";
-    }
-}
-
-// Event-Listener zum Starten des Tutorials
-document.addEventListener('DOMContentLoaded', () => {
-    const tutorialBox = document.getElementById('tutorial-box');
-    
-    // Den Text für den Start einstellen
-    document.getElementById('tutorial-message').textContent = "Klicke hier, um das Tutorial zu starten.";
-
-    // Beim Klick auf die Box zum nächsten Schritt springen
-    tutorialBox.onclick = nextTutorialStep;
-});
-              
+// ... (Rest der Funktionen nextTutorialStep und DOMContentLoaded bleibt unverändert) ...
