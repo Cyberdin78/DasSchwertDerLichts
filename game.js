@@ -102,5 +102,45 @@ const tutorialSteps = [
     },
     // Schritt 11: Abschluss
     {
-        message: "Das Tutorial ist abgeschlossen
-        
+        message: "Das Tutorial ist abgeschlossen, edler Fremder! Die Hoffnung des Dorfes ruht nun in Euren Händen. Klickt, um Eure Reise zu beginnen.",
+        action: null
+    }
+];
+
+// Funktion zur Steuerung der Tutorial-Schritte
+function nextTutorialStep() {
+    // Prüfen, ob noch Schritte übrig sind
+    if (currentTutorialStep < tutorialSteps.length) {
+        const step = tutorialSteps[currentTutorialStep];
+        const tutorialMessage = document.getElementById('tutorial-message');
+
+        // 1. Die Nachricht anzeigen
+        tutorialMessage.textContent = step.message;
+
+        // 2. Die Aktion ausführen, falls vorhanden
+        if (step.action) {
+            step.action();
+        }
+
+        // 3. Zum nächsten Schritt übergehen
+        currentTutorialStep++;
+    } else {
+        // Tutorial ist fertig
+        const tutorialBox = document.getElementById('tutorial-box');
+        tutorialBox.style.cursor = 'default';
+        tutorialBox.onclick = null;
+        document.getElementById('tutorial-message').textContent = "Das Spiel kann nun beginnen! Möget Ihr Erfolg haben!";
+    }
+}
+
+// Event-Listener zum Starten des Tutorials
+document.addEventListener('DOMContentLoaded', () => {
+    const tutorialBox = document.getElementById('tutorial-box');
+    
+    // Den Start-Text einstellen
+    document.getElementById('tutorial-message').textContent = "Klickt hier, um das Tutorial zu starten.";
+
+    // Beim Klick auf die Box zum nächsten Schritt springen
+    tutorialBox.onclick = nextTutorialStep;
+});
+            
