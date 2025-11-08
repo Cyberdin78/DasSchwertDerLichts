@@ -1,61 +1,93 @@
-
-
 <!DOCTYPE html>
 <html lang="de">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Das Schwert des Lichts</title>
-    </head>
+    <title>Das Schwert des Lichts - Einführungsprototyp</title>
+    <style>
+        body { 
+            font-family: sans-serif; 
+            background-color: #f4f4f4; 
+            padding: 20px; 
+            display: flex; 
+            flex-direction: column;
+            align-items: center;
+        }
+        #game-container { 
+            max-width: 800px; 
+            width: 100%;
+            margin: auto; 
+            background: white; 
+            padding: 20px; 
+            border-radius: 8px; 
+            box-shadow: 0 0 10px rgba(0,0,0,0.1); 
+        }
+        #tutorial-box { 
+            /* Entspricht der alten dialogue-box */
+            background-color: #e0f7fa; 
+            border-left: 5px solid #00bcd4; 
+            padding: 15px; 
+            margin-bottom: 20px; 
+            border-radius: 4px; 
+            cursor: pointer; /* Zeigt an, dass man klicken soll */
+        }
+        .buttons-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .buttons-container button, .building-info { 
+            margin: 5px; 
+            padding: 10px 15px; 
+            cursor: pointer; 
+            background-color: #4CAF50; 
+            color: white; 
+            border: none; 
+            border-radius: 4px; 
+            text-align: left;
+        }
+        .buttons-container button:hover:not(:disabled) { 
+            opacity: 0.9; 
+        }
+        .hidden { 
+            display: none !important; 
+        }
+        /* Styling für das Hauptgebäude, das Gasthaus */
+        #inn {
+            background-color: #FFC107;
+            color: black;
+            cursor: default;
+            width: 100%;
+        }
+    </style>
+</head>
 <body>
-    <div id="game-container">
-        
-        <div id="tutorial-box">
-            <p id="tutorial-message">Lade Spiel...</p>
-        </div>
 
-        <div id="village-center">
-            
-            <div id="well" class="village-asset">
-                <p>Brunnen</p>
-            </div>
-            
-            <div id="inn" class="building">
-                <h3>Gasthaus (Lvl 0)</h3>
-                <p>(Klicken zum Bauen)</p>
-            </div>
-            
-            <div id="lumberjack" class="building hidden">
-                <h3>Holzfällerhütte</h3>
-            </div>
-            
-            <div id="quarry" class="building hidden">
-                <h3>Steinbruch</h3>
-            </div>
-            
-            <div id="farm" class="building hidden">
-                <h3>Bauernhof</h3>
-            </div>
-            
-            <div id="residential" class="building hidden">
-                <h3>Wohnhaus</h3>
-            </div>
-            
-            <div id="market" class="building hidden">
-                <h3>Händler</h3>
-            </div>
-            
-            <div id="blacksmith" class="building hidden">
-                <h3>Schmied</h3>
-            </div>
-            
-            <div id="first-tower" class="building hidden">
-                <h3>Erster Turm</h3>
-            </div>
-
-        </div>
-
+<div id="game-container">
+    <h1>Das Schwert des Lichts - Dorfentwicklung (v0.0.1)</h1>
+    
+    <div id="tutorial-box">
+        <p id="tutorial-message">Lade Spiel Logik...</p>
     </div>
+
+    <div id="buildings-container" class="buttons-container">
+        
+        <div id="inn" class="building-info">
+             <h3>Gasthaus (Lvl 0)</h3>
+             <p>Das Zentrum der Macht.</p>
+        </div>
+
+        <button id="lumberjack" class="hidden">Holzfällerhütte/Sägewerk (Bauen)</button>
+        <button id="quarry" class="hidden">Steinbruch (Bauen)</button>
+        <button id="farm" class="hidden">Bauernhof (Bauen)</button>
+        <button id="residential" class="hidden">Wohnhaus (Bauen)</button>
+        <button id="market" class="hidden">Händler/Markt (Bauen)</button>
+        <button id="blacksmith" class="hidden">Schmied (Bauen)</button>
+        <button id="first-tower" class="hidden" disabled>Erster Turm (Abenteuer!)</button>
+    </div>
+</div>
+
 <script src="game.js"></script> 
-    </body>
+</body>
 </html>
+    
